@@ -45,7 +45,7 @@ struct sfero_reala {
 };
 
 struct sfero {
-  vektoro centrodesfero;
+  vektoro centro;
   mpz_t radiuso;
   materialo *materialo;
 };
@@ -79,8 +79,10 @@ struct tmpvariabloj {
   mpz_t mpztmp;
   mpz_t mpztmp2;
   mpf_t mpftmp;
-  vektoro_reala vktmp;
-  vektoro_reala vktmp2;
+  vektoro_reala vkrtmp;
+  vektoro_reala vkrtmp2;
+  vektoro vktmp;
+  vektoro vktmp2;
 };
 
 
@@ -118,7 +120,7 @@ void vektoron_mul_per_vektoronumbroj(vektoro vkt_fina, vektoro vkt1, vektoro vkt
 void vektoron_realan_mul_per_vektoronumbroj(vektoro_reala vkt_fina, vektoro_reala vkt1, vektoro_reala vkt2);
 inline void vektoron_realan_mul_per_numbro(vektoro_reala vkt_fina, vektoro_reala vkt, mpq_t numbro);
 
-void vektoron_dot(mpz_t dot, vektoro vkt1, vektoro vkt2);
+void vektoron_dot(mpz_t dot, vektoro vkt1, vektoro vkt2, vektoro vktmp);
 void vektoron_realan_dot(mpq_t dot, vektoro_reala vkt1, vektoro_reala vkt2);
 
 void vektoron_dividu_per_mpz(vektoro vkt, mpz_t numbro);
@@ -132,24 +134,51 @@ void montru_al_loko_qq(vektoro_reala loko, duonrektoqq dr, mpq_t t);
 
 void duonrektoqq_tusxas_sferon(mpf_t respondo, vektoro_reala centrodesfero, mpq_t radiuso, duonrektoqq dr, vektoro_reala lmc, struct tmpvariabloj *tmpvariabloj, struct konstantoj *konstantoj);
 
+void duonrekto_tusxas_sferon(mpz_t respondo, struct sfero *sfero, duonrekto dr, struct tmpvariabloj *tv, struct konstantoj *konst);
 
+//struct sfero {
+//  vektoro centro;
+//  mpz_t radiuso;
+//  materialo *materialo;
+//};
+
+void duonrekto_tusxas_sferon(mpz_t respondo, struct sfero *sfero, duonrekto dr, struct tmpvariabloj *tv, struct konstantoj *konst){
+  //lmc = dr[0]-centrodesfero
+  vektoron_deprenu(tv->vktmp, dr[0], sfero->centro);
+  //a = dot(dr[1], dr[1]);
+  vektoron_dot(tv->vktmp2[0], dr[1], dr[1]);
+  //b = 2*dot(lmc, dr[1]);
+  vektoron_dot(tv->vktmp2[1], tv->vktmp, dr[1]);
+  mpz_add(tv->vktmp2[1], tv->vktmp2[1], tv->vktmp2[1]);
+  //c = dot(lmc, lmc) - radiuso*radiuso;
+  mpz_mul(tv->mpztmp, radiuso, radiuso);
+  vektoron_dot(tv->vktmp2[2], tv->vktmp, tv->vktmp);
+  mpz_sub(tv->vktmp2[2], tv->vktmp[2], tv->mpztmp);
+  //diskriminento = b*b - 4*a*c;
+  
+  //diskriminento estas mpqtmp
+
+  //if (diskriminento<0){return -1;}
+
+  //else {return (-b - sqrt(discriminant) ) / (2.0*a);}
+}
 
 void duonrektoqq_tusxas_sferon(mpf_t respondo, vektoro_reala centrodesfero, mpq_t radiuso, duonrektoqq dr, vektoro_reala lmc, struct tmpvariabloj *tv, struct konstantoj *konstantoj){
   //lmc = dr[0]-centrodesfero
   vektoron_realan_deprenu(lmc, dr[0], centrodesfero);
   //a = dot(dr[1], dr[1]);
-  vektoron_realan_dot(tv->vktmp[0], dr[1], dr[1]);
+  vektoron_realan_dot(tv->vkrtmp[0], dr[1], dr[1]);
   //b = 2*dot(lmc, dr[1]);
-  vektoron_realan_dot(tv->vktmp[1], lmc, dr[1]);
-  mpq_mul(tv->vktmp[1], tv->vktmp[1], konstantoj->du);
+  vektoron_realan_dot(tv->vkrtmp[1], lmc, dr[1]);
+  mpq_mul(tv->vkrtmp[1], tv->vkrtmp[1], konstantoj->du);
   //c = dot(lmc, lmc) - radiuso*radiuso;
-  vektoron_realan_dot(tv->vktmp[2], lmc, lmc);
+  vektoron_realan_dot(tv->vkrtmp[2], lmc, lmc);
   mpq_mul(tv->mpqtmp, radiuso, radiuso);
-  mpq_sub(tv->vktmp[2], tv->vktmp[2], tv->mpqtmp);
+  mpq_sub(tv->vkrtmp[2], tv->vkrtmp[2], tv->mpqtmp);
   //diskriminento = b*b - 4*a*c;
-  mpq_mul(tv->mpqtmp2, tv->vktmp[1], tv->vktmp[1]);
-  mpq_mul(tv->mpqtmp, tv->vktmp[0], konstantoj->kvar);
-  mpq_mul(tv->mpqtmp, tv->mpqtmp, tv->vktmp[2]);
+  mpq_mul(tv->mpqtmp2, tv->vkrtmp[1], tv->vkrtmp[1]);
+  mpq_mul(tv->mpqtmp, tv->vkrtmp[0], konstantoj->kvar);
+  mpq_mul(tv->mpqtmp, tv->mpqtmp, tv->vkrtmp[2]);
   mpq_sub(tv->mpqtmp, tv->mpqtmp2, tv->mpqtmp);
   //diskriminento estas mpqtmp
 
@@ -166,11 +195,11 @@ void duonrektoqq_tusxas_sferon(mpf_t respondo, vektoro_reala centrodesfero, mpq_
   else {
     mpf_set_q(respondo, tv->mpqtmp);
     mpf_sqrt(respondo, respondo);
-    mpf_set_q(tv->mpftmp, tv->vktmp[1]);
+    mpf_set_q(tv->mpftmp, tv->vkrtmp[1]);
     mpf_neg(tv->mpftmp, tv->mpftmp);
     mpf_sub(respondo, tv->mpftmp, respondo);
 
-    mpf_set_q(tv->mpftmp, tv->vktmp[0]);
+    mpf_set_q(tv->mpftmp, tv->vkrtmp[0]);
     mpf_mul_ui(tv->mpftmp, tv->mpftmp, 2);
     mpf_div(respondo, respondo, tv->mpftmp);
   }
@@ -221,6 +250,12 @@ void vektoron_realan_dot(mpq_t dot, vektoro_reala vkt1, vektoro_reala vkt2){
   mpq_add(dot, vktmp[0], vktmp[1]);
   mpq_add(dot, dot, vktmp[2]);
   vektoron_realan_klarigu(vktmp);
+}
+
+void vektoron_dot(mpz_t dot, vektoro vkt1, vektoro vkt2, vektoro vktmp){
+  vektoron_mul_per_vektoronumbroj(vktmp, vkt1, vkt2);
+  mpz_add(dot, vktmp[0], vktmp[1]);
+  mpz_add(dot, dot, vktmp[2]);
 }
 
 void vektoron_realan_mul_per_vektoronumbroj(vektoro_reala vkt_fina, vektoro_reala vkt1, vektoro_reala vkt2){
@@ -324,8 +359,8 @@ void tmpvariablojn_init(struct tmpvariabloj *tmpvariabloj){
   mpz_init(tmpvariabloj->mpztmp);
   mpz_init(tmpvariabloj->mpztmp2);
   mpf_init(tmpvariabloj->mpftmp);
-  vektoron_realan_init(tmpvariabloj->vktmp);
-  vektoron_realan_init(tmpvariabloj->vktmp2);
+  vektoron_realan_init(tmpvariabloj->vkrtmp);
+  vektoron_realan_init(tmpvariabloj->vkrtmp2);
 }
 void tmpvariablojn_klarigu(struct tmpvariabloj *tmpvariabloj){
   mpq_clear(tmpvariabloj->mpqtmp);
@@ -333,8 +368,8 @@ void tmpvariablojn_klarigu(struct tmpvariabloj *tmpvariabloj){
   mpz_clear(tmpvariabloj->mpztmp);
   mpz_clear(tmpvariabloj->mpztmp2);
   mpf_clear(tmpvariabloj->mpftmp);
-  vektoron_realan_klarigu(tmpvariabloj->vktmp);
-  vektoron_realan_klarigu(tmpvariabloj->vktmp2);
+  vektoron_realan_klarigu(tmpvariabloj->vkrtmp);
+  vektoron_realan_klarigu(tmpvariabloj->vkrtmp2);
 }
 
 #endif

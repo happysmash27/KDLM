@@ -157,12 +157,12 @@ void kreuBildonf_mpz (int *nx, int *ny, kolorof **bildof, const int pdm){
   
 /*   //ĉu mi devus uzi x-on, y-on, aŭ z-on por kontroli la distancon? */
 /*   int kontroldirekton, sgn, cmp; */
-/*   mpq_abs(tv->vktmp[2], dr[1][2]); */
-/*   mpq_abs(tv->vktmp[1], dr[1][1]); */
-/*   mpq_abs(tv->vktmp[0], dr[1][0]); */
-/*   if (mpq_cmp(tv->vktmp[2], tv->vktmp[1])>=0){ */
+/*   mpq_abs(tv->vkrtmp[2], dr[1][2]); */
+/*   mpq_abs(tv->vkrtmp[1], dr[1][1]); */
+/*   mpq_abs(tv->vkrtmp[0], dr[1][0]); */
+/*   if (mpq_cmp(tv->vkrtmp[2], tv->vkrtmp[1])>=0){ */
 /*     //z estas pli granda ol y aŭ egalas ĝin */
-/*     if (mpq_cmp(tv->vktmp[2], tv->vktmp[0])>=0){ */
+/*     if (mpq_cmp(tv->vkrtmp[2], tv->vkrtmp[0])>=0){ */
 /*       //z estas la plej granda! */
 /*       kontroldirekton = 2; */
 /*     } else { */
@@ -172,7 +172,7 @@ void kreuBildonf_mpz (int *nx, int *ny, kolorof **bildof, const int pdm){
 /*     } */
 /*   } else { */
 /*     //y estas pli granda ol z, sed ĉu ĝi estas pli granda ol x? Hmm... */
-/*     if (mpq_cmp(tv->vktmp[1], tv->vktmp[0])>=0){ */
+/*     if (mpq_cmp(tv->vkrtmp[1], tv->vkrtmp[0])>=0){ */
 /*       //y estas pli granda aŭ egalas x kaj z */
 /*       kontroldirekton = 1; */
 /*     } else { */
@@ -231,8 +231,8 @@ void kalkuluKoloron_duonrektoqq(kolorof fk, duonrektoqq dr, struct konstantoj *k
   //  mpq_t mpqtmp;
   //  mpq_t mpqtmp2;
   //  mpf_t mpftmp;
-  //  vektoro_reala vktmp;
-  //  vektoro_reala vktmp2;
+  //  vektoro_reala vkrtmp;
+  //  vektoro_reala vkrtmp2;
   //};
   
   vektoro_reala lmc, centrodesfero;
@@ -264,14 +264,14 @@ void kalkuluKoloron_duonrektoqq(kolorof fk, duonrektoqq dr, struct konstantoj *k
     //montru_al_loko(duonrektoqq dr, t) { return dr[0] + t*dr[1]; }
     //vktmp = vektoro_de_unuo(montru_al_loko(dr, respondo)-vkt{0, 0 -1));
     mpq_set_f(tv.mpqtmp, respondo);
-    montru_al_loko_qq(tv.vktmp, dr, tv.mpqtmp);
+    montru_al_loko_qq(tv.vkrtmp, dr, tv.mpqtmp);
     //mpq_add_si(vktmp[2], vktmp[2], konstantoj->unu);
     //vktmp = vktmp - vkt{0, 0, -1}
-    mpz_add(mpq_numref(tv.vktmp[2]), mpq_numref(tv.vktmp[2]), mpq_denref(tv.vktmp[2]));
+    mpz_add(mpq_numref(tv.vkrtmp[2]), mpq_numref(tv.vkrtmp[2]), mpq_denref(tv.vkrtmp[2]));
     //vektoro_de_unuo
-    longo_de_vektoro_reala_vktmp(tv.mpftmp, tv.vktmp, tv.vktmp2);
+    longo_de_vektoro_reala_vktmp(tv.mpftmp, tv.vkrtmp, tv.vkrtmp2);
     
-    vektorompq_al_vektorompf(vktmpf, tv.vktmp);
+    vektorompq_al_vektorompf(vktmpf, tv.vkrtmp);
     vektoronmpf_dividu_per_mpf(vktmpf, vktmpf, tv.mpftmp);
     //vktmpf nun estas eta
     vektorompf_al_vektorof(vktf, vktmpf);
