@@ -83,6 +83,7 @@ struct tmpvariabloj {
   vektoro_reala vkrtmp2;
   vektoro vktmp;
   vektoro vktmp2;
+  vektoro vktmp3;
 };
 
 
@@ -90,10 +91,12 @@ struct tmpvariabloj {
 inline void vektoron_init(vektoro vkt);
 inline void vektoron_realan_init(vektoro_reala vkt);
 inline void duonrektonqq_init(duonrektoqq dr);
+inline void duonrekton_init(duonrekto *dr);
 
 inline void vektoron_klarigu(vektoro vkt);
 inline void vektoron_realan_klarigu(vektoro_reala vkt);
 inline void duonrektonqq_klarigu(duonrektoqq dr);
+inline void duonrekton_klarigu(duonrekto *dr);
 
 inline void vektoron_algxustigu(vektoro vkt, mpz_t x, mpz_t y, mpz_t z);
 inline void vektoron_realan_algxustigu(vektoro_reala vkt, mpq_t x, mpq_t y, mpq_t z);
@@ -144,15 +147,15 @@ void duonrekto_tusxas_sferon(mpz_t respondo, struct sfero *sfero, duonrekto dr, 
 
 void duonrekto_tusxas_sferon(mpz_t respondo, struct sfero *sfero, duonrekto dr, struct tmpvariabloj *tv, struct konstantoj *konst){
   //lmc = dr[0]-centrodesfero
-  vektoron_deprenu(tv->vktmp, dr[0], sfero->centro);
+  //vektoron_deprenu(tv->vktmp, dr[0], sfero->centro);
   //a = dot(dr[1], dr[1]);
-  vektoron_dot(tv->vktmp2[0], dr[1], dr[1]);
+  //vektoron_dot(tv->vktmp2[0], dr[1], dr[1]);
   //b = 2*dot(lmc, dr[1]);
-  vektoron_dot(tv->vktmp2[1], tv->vktmp, dr[1]);
+  //vektoron_dot(tv->vktmp2[1], tv->vktmp, dr[1]);
   mpz_add(tv->vktmp2[1], tv->vktmp2[1], tv->vktmp2[1]);
   //c = dot(lmc, lmc) - radiuso*radiuso;
-  mpz_mul(tv->mpztmp, radiuso, radiuso);
-  vektoron_dot(tv->vktmp2[2], tv->vktmp, tv->vktmp);
+  mpz_mul(tv->mpztmp, sfero->radiuso, sfero->radiuso);
+  vektoron_dot(tv->vktmp2[2], tv->vktmp, tv->vktmp, tv->vktmp3);
   mpz_sub(tv->vktmp2[2], tv->vktmp[2], tv->mpztmp);
   //diskriminento = b*b - 4*a*c;
   mpz_mul(tv->mpztmp, tv->vktmp2[1], tv->vktmp2[1]);
@@ -272,6 +275,12 @@ void vektoron_dot(mpz_t dot, vektoro vkt1, vektoro vkt2, vektoro vktmp){
   mpz_add(dot, dot, vktmp[2]);
 }
 
+void vektoron_mul_per_vektoronumbroj(vektoro vkt_fina, vektoro vkt1, vektoro vkt2){
+  mpz_mul(vkt_fina[0], vkt1[0], vkt2[0]);
+  mpz_mul(vkt_fina[1], vkt1[1], vkt2[1]);
+  mpz_mul(vkt_fina[2], vkt1[2], vkt2[2]);
+}
+
 void vektoron_realan_mul_per_vektoronumbroj(vektoro_reala vkt_fina, vektoro_reala vkt1, vektoro_reala vkt2){
   mpq_mul(vkt_fina[0], vkt1[0], vkt2[0]);
   mpq_mul(vkt_fina[1], vkt1[1], vkt2[1]);
@@ -287,6 +296,9 @@ void vektoron_realan_mul_per_numbro(vektoro_reala vkt_fina, vektoro_reala vkt, m
 void duonrektonqq_init(duonrektoqq dr){
   vektoron_realan_init(dr[0]);
   vektoron_realan_init(dr[1]);
+}
+void duonrekton_init(duonrekto *dr){
+  vektoron_init(dr->loko);
 }
 void vektoron_realan_init(vektoro_reala vkt){
   mpq_init(vkt[0]);
@@ -322,6 +334,9 @@ void vektoron_init(vektoro vkt){
 void duonrektonqq_klarigu(duonrektoqq dr){
   vektoron_realan_klarigu(dr[0]);
   vektoron_realan_klarigu(dr[1]);
+}
+void duonrekton_klarigu(duonrekto *dr){
+  vektoron_klarigu(dr->loko);
 }
 void vektoron_realan_klarigu(vektoro_reala vkt){
   mpq_clear(vkt[0]);

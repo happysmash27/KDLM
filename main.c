@@ -26,7 +26,7 @@ inline void kreuBildon255 (int *nx, int *ny, kolorof **bildof, koloro255 *bildo2
 
 void kreuBildonf (int *nx, int *ny, kolorof **bildof, char *reala);
 void kreuBildonf_mpq (int *nx, int *ny, kolorof **bildof);
-inline void kreuBildonf_mpz (int *nx, int *ny, kolorof **bildof, const unsigned long int pdm);
+inline int kreuBildonf_mpz (int *nx, int *ny, kolorof **bildof, const unsigned long int pdm);
 
 inline void skribuPPM (int *nx, int *ny, kolorof **bildof, FILE * eliro);
 
@@ -142,12 +142,12 @@ void kreuBildonf (int *nx, int *ny, kolorof **bildof, char *reala){
 int kreuBildonf_mpz (int *nx, int *ny, kolorof **bildof, const unsigned long int pdm){
   //(pdm = potenco de metro, la potenco de 2 kiu egalas metron)
   int y, x;
-  const mpz_t metro;
+  mpz_t metro;
   mpz_ui_pow_ui(metro, 2, pdm);
 
   kolorof nk;
   duonrekto ndr;
-  duonrekton_init(ndr);
+  duonrekton_init(&ndr);
 
   const mpz_t rastrumerlongo;
   
@@ -156,11 +156,16 @@ int kreuBildonf_mpz (int *nx, int *ny, kolorof **bildof, const unsigned long int
     //v = y/(*nx);
     for (x = 1; x <= *nx; x++){
       //u = x/(*nx);
-      
+      x = x;
       //vektoron_algxustigu(ndr[1], minimumau+(u*horizontala), minimumav+(v*virtikala), -1);
 
     }
   }
+
+  duonrekton_klarigu(&ndr);
+
+
+  return 1;
 }
 
 /* void kalkulu_kolisiojn(kolisio *finakolisio, duonrektoqq dr, struct tmpvariabloj *tv, struct objektlisto *objektoj){ */
