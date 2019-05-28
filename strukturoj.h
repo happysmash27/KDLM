@@ -155,12 +155,26 @@ void duonrekto_tusxas_sferon(mpz_t respondo, struct sfero *sfero, duonrekto dr, 
   vektoron_dot(tv->vktmp2[2], tv->vktmp, tv->vktmp);
   mpz_sub(tv->vktmp2[2], tv->vktmp[2], tv->mpztmp);
   //diskriminento = b*b - 4*a*c;
-  
-  //diskriminento estas mpqtmp
+  mpz_mul(tv->mpztmp, tv->vktmp2[1], tv->vktmp2[1]);
+  mpz_mul(tv->mpztmp2, tv->vktmp2[0], tv->vktmp2[2]);
+  mpz_mul_ui(tv->mpztmp2, tv->mpztmp2, 4);
+  mpz_sub(tv->mpztmp, tv->mpztmp, tv->mpztmp2);
+  //diskriminento estas mpztmp
 
   //if (diskriminento<0){return -1;}
-
+  if (mpz_sgn(tv->mpztmp)<0){
+    mpz_set_d(respondo, -1);
+  }
   //else {return (-b - sqrt(discriminant) ) / (2.0*a);}
+  else {
+    mpz_neg(respondo, tv->vktmp2[1]);
+    mpz_sqrt(tv->mpztmp2, tv->mpztmp);
+    mpz_sub(respondo, respondo, tv->mpztmp2);
+
+    mpz_mul_ui(tv->mpztmp2, tv->vktmp2[0], 2);
+
+    mpz_tdiv_q(respondo, respondo, tv->mpztmp2);
+  }
 }
 
 void duonrektoqq_tusxas_sferon(mpf_t respondo, vektoro_reala centrodesfero, mpq_t radiuso, duonrektoqq dr, vektoro_reala lmc, struct tmpvariabloj *tv, struct konstantoj *konstantoj){
